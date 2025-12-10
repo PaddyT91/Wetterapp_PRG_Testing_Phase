@@ -1,0 +1,81 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+hide circle
+skinparam classAttributeIconSize 0
+title Klassen
+left to right direction
+
+
+class HistoricWeather {
+    setHistoricWeather()
+    getDataAt()
+}
+
+class CurrentWeather {
+
+}
+
+abstract class Weather {
+    -temperature2M: Double
+    -apparentTemperature: Double
+    -freezingLevelHeight: Double
+    -relativeHumidity2M: Int
+    -rain: Double
+    -windSpeed10m: Int
+    -windDirection10m: Int
+    -isDay: Boolean
+    -weatherCode: WeatherCode
+    -timeStamp: Date
+    -location: Location
+    setWeather()
+}
+
+class DailyWeather {
+    -sunrise: Date
+    -sunset: Date
+
+}
+
+class Location {
+    - latitude: Double
+    - longitude: Double
+    - name: String
+    - admin1: String
+    - admin2: String
+    - elevation: Double
+}
+
+class PollenData {
+    - alderPollen: ??
+    - birchPollen: ??
+    - grassPollen: ??
+    - mugwortPollen: ??
+    - olivePollen: ??
+    - ragweedPollen: ??
+    getPollenDataAt(time: Date)
+}
+
+class APIHandler {
+    -url: URL
+    -connection: HttpURLConnection
+    -responseCode: Int
+    fetchWeather()
+    fetchLocation()
+    storeWeather()
+    storeLocation()
+}
+
+Weather --> Location
+Weather --> WMO_Code
+
+Weather <|-- CurrentWeather
+Weather <|-- HistoricWeather
+Weather <|-- DailyWeather
+Weather <|-- PollenData
+
+enum WeatherCode {
+    Wettercodes
+}
+
+@enduml
