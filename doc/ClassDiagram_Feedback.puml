@@ -1,0 +1,93 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+
+skinparam classAttributeIconSize 0
+title Klassen
+
+
+
+Manager --> Api
+Api <|-.- APIHandler
+UIClass --> Logic
+Logic <|-.- Manager
+Manager --> Fileinterface
+Fileinterface <|-.- File
+Manager --> Weather
+
+class Manager {
+    apiHandler: Api
+    getPollenDataAt(time: Date)
+    storeWeather(): File
+    storeLocation(): File
+    fetchWeather(element: MutableList<Weather>)
+    fetchLocation(element: MutableList<Location>)
+    weatherCode: WeatherCode
+    setWeather()
+    getCurrentWeather()
+    getLocation()
+    getForecast()
+    getFavorites()
+    getHistoricWeather()
+}
+
+interface Fileinterface {
+    readStoredWeather()
+    readStoredLocation()
+    storeWeather()
+    storeLocation()
+
+}
+
+interface Api {
+     getWeatherData(): MutableList<Weather>
+     getLocation(): MutableList<Location>
+}
+
+
+interface Logic {
+    getCurrentWeather()
+    getLocation()
+    getForecast()
+    getFavorites()
+    getHistoricWeather()
+}
+
+class UIClass {
+
+}
+
+
+class File {
+    readStoredWeather()
+    readStoredLocation()
+    storeWeather()
+    storeLocation()
+}
+
+
+class APIHandler {
+    -url: URL
+    -connection: HttpURLConnection
+    -responseCode: Int
+    getWeatherData(): MutableList<Weather>
+    getLocation(): MutableList<Location>
+
+}
+
+class Weather {
+    timeStamp: Date
+    location: Location
+    temperature2M: Double
+    apparentTemperature: Double
+    freezingLevelHeight: Double
+    relativeHumidity2M: Int
+    rain: Double
+    windSpeed10m: Int
+    windDirection10m: Int
+    isDay: Boolean
+    weatherCode: WeatherCode
+}
+
+
+@enduml
