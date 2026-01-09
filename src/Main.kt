@@ -18,4 +18,6 @@ fun main(){
     val dataFile = FileHandler()
     dataFile.work()
 
+    println(WeatherCode.BEWOELKT)
+
 }
