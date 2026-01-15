@@ -13,12 +13,11 @@ val LocationList = mutableListOf<Any>()
 val WeatherList = mutableListOf<Any>()
 
 fun main(){
-    val myTest = Manager()
+    val myApiHandler = ApiHandler()
+    val myTest = Manager(myApiHandler)
+    myTest.fetchLocations("Wil")
+    myTest.pickLocation("Wil", 1)
 
-    val myOrts = myTest.fetchLocations("Wil")
-    val myOrt = myOrts[0]
-
-    myTest.fetchCurrentWeather(myOrt)
 
 //    val dataFile = File()
 //    dataFile.startFileInterface()

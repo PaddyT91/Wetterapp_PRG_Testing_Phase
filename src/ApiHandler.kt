@@ -5,15 +5,17 @@ import java.net.URI
 import java.net.URL
 import java.net.URLEncoder
 import org.json.JSONObject
+import java.time.LocalDate
 import java.time.LocalDateTime
 
-class ApiHandler() {
+class ApiHandler() : Api {
 
-    fun getCurrentWeatherData(location: Location, time: LocalDateTime) : CurrentWeather? {
-        var result: CurrentWeather? = null
+    override fun fetchWeather(location: Location): Weather? {
+
+        var result: Weather? = null
         val latitude = location.getLatitude()
         val longitude = location.getLongitude()
-        val apiUrl = "https://api.open-meteo.com/v1/forecast?latitude=$latitude&longitude=$longitude&current=temperature_2m,relative_humidity_2m,weather_code&timezone=Europe%2FBerlin"
+        val apiUrl = "https://api.open-meteo.com/v1/forecast?latitude=$latitude&longitude=$longitude&daily=weather_code,temperature_2m_max,temperature_2m_min,apparent_temperature_max,apparent_temperature_min,sunrise,sunset&hourly=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m,wind_direction_10m,precipitation,freezing_level_height&current=temperature_2m,relative_humidity_2m,apparent_temperature,wind_speed_10m,wind_direction_10m,precipitation,weather_code&timezone=Europe%2FBerlin&forecast_days=14"
 
 // Internetquelle für JSON-Parser: https://gist.github.com/Da9el00/a29b4acca9dec698e18f88fca2eb8c96
         try {
@@ -37,20 +39,77 @@ class ApiHandler() {
                     response.append(line)
                 }
                 reader.close()
-// Mit Google-KI Anpassung am Code:
+// Mit Google-KI Anpassung am Code damit Daten in Klassen übertragen werden können:
                 val responseText = JSONObject(response.toString())
-                println("responseText-Var: $responseText")
-                if (responseText.has("current")) {
-                    // 1. geschachtelte Objekt "current" holen
-                    val currentObj = responseText.getJSONObject("current")
 
-                    // 2. Werte aus "currentObj" extrahieren
-                    val temperature = currentObj.getDouble("temperature_2m")
-                    val humidity = currentObj.getInt("relative_humidity_2m")
-                    val weatherCode = currentObj.getInt("weather_code")
+// Respons-Objekt in "current", "hourly" und "daily" in JSON-Objekte aufteilen:
+                val currentObj = responseText.getJSONObject("current")
+                val hourlyObj = responseText.getJSONObject("hourly")
+                val dailyObj = responseText.getJSONObject("daily")
 
-                    result = CurrentWeather(location, time, temperature, humidity, weatherCode)
+// Werte aus "current"-Objekt extrahieren:
+                val temperature = currentObj.getDouble("temperature_2m")
+                val humidity = currentObj.getInt("relative_humidity_2m")
+                val weatherCode = currentObj.getInt("weather_code")
+                val precipitation = currentObj.getInt("precipitation")
+                val windSpeed = currentObj.getInt("wind_speed_10m")
+                val windDirection = currentObj.getInt("wind_direction_10m")
+                val apparentTemperature = currentObj.getDouble("apparent_temperature")
+
+// Werte aus "hourly"-Objekt extrahieren:
+                val hourlyTimes = hourlyObj.getJSONArray("time")
+                val hourlyTemps = hourlyObj.getJSONArray("temperature_2m")
+                val hourlyHumidity = hourlyObj.getJSONArray("relative_humidity_2m")
+                val hourlyApparentTemperature = hourlyObj.getJSONArray("apparent_temperature")
+                val hourlyPrecipitation = hourlyObj.getJSONArray("precipitation")
+                val hourlyWindSpeed = hourlyObj.getJSONArray("wind_speed_10m")
+                val hourlyWindDirection = hourlyObj.getJSONArray("wind_direction_10m")
+                val hourlyWeatherCode = hourlyObj.getJSONArray("weather_code")
+                val hourlyFreezingLevelHeight = hourlyObj.getJSONArray("freezing_level_height")
+                //val hourlySnowfallHeight = hourlyObj.getJSONArray("snowfall_height")
+
+// HourlyData-Objekte mit "hourly"-Daten befüllen:
+                val hourlyList = mutableListOf<HourlyData>()
+                for (i in 0 until hourlyTimes.length()-1) {
+                    hourlyList.add(HourlyData(
+                        times = LocalDateTime.parse(hourlyTimes.getString(i)),
+                        temperature2M = hourlyTemps.optDouble(i),
+                        relativeHumidity2M = hourlyHumidity.optInt(i),
+                        apparentTemperature2M = hourlyApparentTemperature.optDouble(i),
+                        precipitation = hourlyPrecipitation.optDouble(i),
+                        windSpeed = hourlyWindSpeed.optDouble(i),
+                        windDirection = hourlyWindDirection.optInt(i),
+                        weatherCode = hourlyWeatherCode.optInt(i),
+                        freezingLevel = hourlyFreezingLevelHeight.optDouble(i)
+                        //snowfallLevel = hourlySnowfallHeight.optDouble(i)
+                    ))
                 }
+
+// Werte aus "daily"-Objekt extrahieren:
+                val dailyTimes = dailyObj.getJSONArray("time")
+                val dailyWeatherCodes = dailyObj.getJSONArray("weather_code")
+                val dailyTemperatureMin = dailyObj.getJSONArray("temperature_2m_min")
+                val dailyTemperatureMax = dailyObj.getJSONArray("temperature_2m_max")
+                val dailyApparentTemperatureMin = dailyObj.getJSONArray("apparent_temperature_min")
+                val dailyApparentTemperatureMax = dailyObj.getJSONArray("apparent_temperature_max")
+                val dailySunset = dailyObj.getJSONArray("sunset")
+                val dailySunrise = dailyObj.getJSONArray("sunrise")
+
+                // DailyData-Objekte mit "hourly"-Daten befüllen:
+                val dailyList = mutableListOf<DailyData>()
+                for (i in 0 until dailyTimes.length()-1) {
+                    dailyList.add(DailyData(
+                        time = LocalDate.parse(dailyTimes.getString(i)),
+                        temperatureMin = dailyTemperatureMin.optDouble(i),
+                        temperatureMax = dailyTemperatureMax.optDouble(i),
+                        apparentTemperatureMin = dailyApparentTemperatureMin.optDouble(i),
+                        apparentTemperatureMax = dailyApparentTemperatureMax.optDouble(i),
+                        sunset = LocalDateTime.parse(dailySunset.getString(i)),
+                        sunrise = LocalDateTime.parse(dailySunrise.getString(i)),
+                        weatherCode = dailyWeatherCodes.optInt(i),
+                    ))
+                }
+                result = Weather(temperature, humidity, weatherCode, precipitation, windSpeed, windDirection, apparentTemperature, hourlyList, dailyList)
 
             } else {
                 println("Error: Unable to fetch data from the API")
@@ -60,11 +119,69 @@ class ApiHandler() {
         } catch (e: Exception) {
             e.printStackTrace()
         }
-
         return result
     }
 
-    fun getLocations(searchText: String) : MutableList<Location> {
+// Gemini 3: Eine Erweiterung der JSONObject-Klasse um einen 0-und-1-Int-Rückgabewert zu einem Boolen umzuwandeln.
+
+//    fun getCurrentWeatherData(location: Location) : CurrentWeather? {
+//        var result: CurrentWeather? = null
+//        val latitude = location.getLatitude()
+//        val longitude = location.getLongitude()
+//        val apiUrl = "https://api.open-meteo.com/v1/forecast?latitude=$latitude&longitude=$longitude&current=temperature_2m,relative_humidity_2m,weather_code&timezone=Europe%2FBerlin&forecast_days=7"
+////        val apiUrl2 = "https://api.open-meteo.com/v1/forecast?latitude=47.37&longitude=8.55&hourly=temperature_2m,relative_humidity_2m,weather_code&models=meteoswiss_icon_ch1&current=temperature_2m,relative_humidity_2m,weather_code&timezone=Europe%2FBerlin&forecast_days=7"
+////        val apiUrl3 = "https://api.open-meteo.com/v1/forecast?latitude=47.37&longitude=8.55&daily=weather_code,temperature_2m_max,temperature_2m_min,sunset,sunrise&hourly=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,wind_speed_10m,wind_direction_10m,weather_code,freezing_level_height,snowfall_height,is_day&models=meteoswiss_icon_ch1&current=weather_code,precipitation,apparent_temperature,relative_humidity_2m,temperature_2m,wind_speed_10m,wind_direction_10m&timezone=Europe%2FBerlin&forecast_days=7"
+//// Internetquelle für JSON-Parser: https://gist.github.com/Da9el00/a29b4acca9dec698e18f88fca2eb8c96
+//        try {
+//
+//            val url : URL = URI.create(apiUrl).toURL()
+//            val connection : HttpURLConnection = url.openConnection() as HttpURLConnection
+//
+//            //Request method: GET
+//            connection.requestMethod = "GET"
+//
+//            // Response code
+//            val responseCode: Int = connection.responseCode     // 200 = HTTP_OK: Abruf funktioniert
+//
+//            if (responseCode == HttpURLConnection.HTTP_OK) {
+//                // Read the response data
+//                val reader = BufferedReader(InputStreamReader(connection.inputStream))
+//                var line: String?
+//                val response = StringBuilder()
+//
+//                while (reader.readLine().also { line = it } != null) {
+//                    response.append(line)
+//                }
+//                reader.close()
+//// Mit Google-KI Anpassung am Code:
+//                val responseText = JSONObject(response.toString())
+//                println("responseText-Var: $responseText")
+//
+//                if (responseText.has("current")) {
+//                    // 1. geschachtelte Objekt "current" holen
+//                    val currentObj = responseText.getJSONObject("current")
+//
+//                    // 2. Werte aus "currentObj" extrahieren
+//                    val temperature = currentObj.getDouble("temperature_2m")
+//                    val humidity = currentObj.getInt("relative_humidity_2m")
+//                    val weatherCode = currentObj.getInt("weather_code")
+//
+//                    result = CurrentWeather(location, temperature, humidity, weatherCode)
+//                }
+//
+//            } else {
+//                println("Error: Unable to fetch data from the API")
+//            }
+//            // Close the connection
+//            connection.disconnect()
+//        } catch (e: Exception) {
+//            e.printStackTrace()
+//        }
+//
+//        return result
+//    }
+
+    override fun fetchLocations(searchText: String) : MutableList<Location> {
         val results = mutableListOf<Location>()
         val text = URLEncoder.encode(searchText, "UTF-8")
         val apiUrl = "https://geocoding-api.open-meteo.com/v1/search?name=$text&count=10&language=de&format=json&countryCode=CH"

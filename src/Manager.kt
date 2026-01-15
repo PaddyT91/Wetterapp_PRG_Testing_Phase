@@ -1,31 +1,36 @@
 import java.time.LocalDateTime
 
-class Manager() {
-    private val apiHandler = ApiHandler()
-    private val weatherCodes = WeatherCode.entries
+class Manager(
+    private val apiHandler: Api) {
+    private var fetchedWeather: Weather? = null
+    private var fetchedLocations: MutableList<Location> = mutableListOf()
+    private val weatherCodes: WeatherCode = WeatherCode.SONNIG
 
 
-    fun fetchCurrentWeather(location: Location) : CurrentWeather {
-        val time = LocalDateTime.now()
-        val result = apiHandler.getCurrentWeatherData(location, time)
-        println(result)
-        // store?
-        return result!!
+    fun getCurrentWeather(location: Location): List<Any> {
+        fetchedWeather = apiHandler.fetchWeather(location)
+        return fetchedWeather!!.getCurrentWeatherDataAll()
     }
 
-
-    fun fetchHourlyWeather(location: Location) {
-        // store?
+    fun getHourlyWeather(location: Location): List<Any> {
+        fetchedWeather = apiHandler.fetchWeather(location)
+        return fetchedWeather!!.getHourlyWeatherDataAll()
     }
 
-    fun fetchDailyWeather(location: Location) {
-        // store?
+    fun getDailyWeather(location: Location): List<Any> {
+        fetchedWeather = apiHandler.fetchWeather(location)
+        return fetchedWeather!!.getDailyWeatherDataAll()
     }
 
     fun fetchLocations(searchedLocation: String) : MutableList<Location> {
-        val result = apiHandler.getLocations(searchedLocation)
-        println(result)
-        return result
+        fetchedLocations = apiHandler.fetchLocations(searchedLocation)
+        return fetchedLocations
+    }
+
+    fun pickLocation(search: String, choice: Int): Location {
+        val locations = fetchLocations(search)
+        println(locations[choice])
+        return locations[choice]
     }
 
     private fun storeWeather() {
@@ -36,22 +41,4 @@ class Manager() {
 
     }
 
-//    fun getCurrentWeather(): CurrentWeather {
-//
-//        return CurrentWeather()
-//    }
-
-//    fun getHourlyWeather(): HourlyWeather {
-//
-//        return HourlyWeather()
-//    }
-//
-//    fun getDailyWeather(): DailyWeather {
-//
-//        return DailyWeather()
-//    }
-//
-//    fun getLocation(): Location {
-//
-//        return Location()
     }
