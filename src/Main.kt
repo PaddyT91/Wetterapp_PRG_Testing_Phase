@@ -1,5 +1,3 @@
-import java.time.LocalDateTime
-
 /*
   Projekt:      Wetterapp
   Firma:        ABB Technikerschule

@@ -1,3 +1,5 @@
+import kotlin.math.E
+
 /*
   Projekt:      Wetterapp
   Firma:        ABB Technikerschule
@@ -10,8 +12,10 @@
 annotation class LocationData
 annotation class WeatherData
 
-class File : Fileinterface {
-    private var running = false
+class File(
+    private val name: String,
+    private val nr: Int) : Fileinterface {
+    var running = false
 
     override fun startFileInterface() {
         running = true
@@ -20,6 +24,8 @@ class File : Fileinterface {
     override fun readStoredWeather() {
         if (running) {
             println("Wetter ist: $WeatherList")
+            println("Name der Liste ist: $name$nr")
+
         }
         else {
             println("keine neuen Wetterdaten")
@@ -35,6 +41,10 @@ class File : Fileinterface {
         }
     }
 
+    override fun readFileList(): MutableList<File> {
+        TODO("Not yet implemented")
+    }
+
     override fun storeWeather(weather: WeatherData) {
         WeatherList.add("Regen")
         println("Wetter ist: $WeatherList")
@@ -45,12 +55,23 @@ class File : Fileinterface {
         println("Ort ist: $LocationList")
     }
 
+    override fun storeFileList(): MutableList<File> {
+        TODO("Not yet implemented")
+    }
+
     override fun clearOldData() {
         LocationList.removeAt(1)
         WeatherList.removeAt(1)
+        FileList.removeAt(1)
     }
 
     override fun checkAccuracy() {
         TODO("Not yet implemented")
     }
+
+    override fun toString(): String {
+        return "$name$nr"
+    }
 }
+
+

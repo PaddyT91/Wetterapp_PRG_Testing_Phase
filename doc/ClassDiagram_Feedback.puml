@@ -1,6 +1,7 @@
 @startuml
 'https://plantuml.com/class-diagram
 
+
 skinparam classAttributeIconSize 0
 title Klassen
 
@@ -17,6 +18,9 @@ Manager -> Location
 Weather --> WeatherCode
 Weather --> HourlyData
 Weather --> DailyData
+Manager --> WeatherCode
+Favorites --> Location
+Manager --> Favorites
 
 class Manager {
     - apiHandler: Api
@@ -44,6 +48,7 @@ interface Api {
      fun fetchLocations(searchText: String): MutableList<Location>
 }
 
+
 interface Logic {
     getCurrentWeather()
     getLocation()
@@ -51,9 +56,11 @@ interface Logic {
     getFavorites()
     getHistoricWeather()
 }
+
 class UIClass {
 
 }
+
 
 class File {
     readStoredWeather()
@@ -61,6 +68,7 @@ class File {
     storeWeather()
     storeLocation()
 }
+
 
 class APIHandler {
     fun fetchWeather(location: Location): Weather?
@@ -114,6 +122,15 @@ class Location {
     - id: UInt
     toggleFavorite()
 }
+
+object Favorites {
+    - favorites:MutableList<Location>
+    - addFavorites(location: String)
+    - removeFavorites()
+    - showFavorites()
+}
+
+
 
 enum WeatherCode {
      SONNIG
