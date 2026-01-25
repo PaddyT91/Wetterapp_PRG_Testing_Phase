@@ -49,11 +49,14 @@ class ApiHandler() : Api {
 // Werte aus "current"-Objekt extrahieren:
                 val temperature = currentObj.getDouble("temperature_2m")
                 val humidity = currentObj.getInt("relative_humidity_2m")
-                val weatherCode = currentObj.getInt("weather_code")
+                //val weatherCode = currentObj.getInt("weather_code")
+                val weatherCodeInt = currentObj.getInt("weather_code")
+                val weatherCode = WeatherCodes.fromCode(weatherCodeInt)
                 val precipitation = currentObj.getInt("precipitation")
                 val windSpeed = currentObj.getInt("wind_speed_10m")
                 val windDirection = currentObj.getInt("wind_direction_10m")
                 val apparentTemperature = currentObj.getDouble("apparent_temperature")
+
 
 // Werte aus "hourly"-Objekt extrahieren:
                 val hourlyTimes = hourlyObj.getJSONArray("time")
@@ -78,9 +81,11 @@ class ApiHandler() : Api {
                         precipitation = hourlyPrecipitation.optDouble(i),
                         windSpeed = hourlyWindSpeed.optDouble(i),
                         windDirection = hourlyWindDirection.optInt(i),
-                        weatherCode = hourlyWeatherCode.optInt(i),
-                        freezingLevel = hourlyFreezingLevelHeight.optDouble(i)
+                        //weatherCode = hourlyWeatherCode.optInt(i),
+                        weatherCode = WeatherCodes.fromCode(hourlyWeatherCode.optInt(i)),
+                        freezingLevel = hourlyFreezingLevelHeight.optDouble(i),
                         //snowfallLevel = hourlySnowfallHeight.optDouble(i)
+
                     ))
                 }
 
@@ -105,8 +110,11 @@ class ApiHandler() : Api {
                         apparentTemperatureMax = dailyApparentTemperatureMax.optDouble(i),
                         sunset = LocalDateTime.parse(dailySunset.getString(i)),
                         sunrise = LocalDateTime.parse(dailySunrise.getString(i)),
-                        weatherCode = dailyWeatherCodes.optInt(i),
+//                        weatherCode = dailyWeatherCodes.optInt(i),
+                        weatherCode = WeatherCodes.fromCode(dailyWeatherCodes.optInt(i))
+
                     ))
+
                 }
                 result = Weather(temperature, humidity, weatherCode, precipitation, windSpeed, windDirection, apparentTemperature, hourlyList, dailyList)
 

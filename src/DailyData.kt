@@ -9,9 +9,25 @@ data class DailyData(
     private val apparentTemperatureMax: Double,
     private val sunset: LocalDateTime,
     private val sunrise: LocalDateTime,
-    private val weatherCode: Int) {
+    private val weatherCode: WeatherCodes ) {
+
+    val weatherCodeNumber: Int
+        get() = weatherCode.code
+
+    val weatherCodeDescription: String
+        get() = weatherCode.description
+
+    val weatherCodeIcon: String
+        get() = weatherCode.icon
+
+
+
 
     fun get(): List<Any> {
-        return listOf(time, temperatureMin, temperatureMax, apparentTemperatureMin, apparentTemperatureMax, sunset, sunrise, weatherCode)
+        return listOf(time, temperatureMin, temperatureMax, apparentTemperatureMin, apparentTemperatureMax, sunset, sunrise,  "${weatherCodeNumber}${weatherCodeDescription}${weatherCodeIcon}")
     }
+
+
+
+
 }
