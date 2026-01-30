@@ -20,20 +20,8 @@ data class Weather(
     fun getHourlyList(): List<HourlyData> = hourlyList
     fun getDailyList(): List<DailyData> = dailyList
 
-    val weatherCodeNumber: Int
-       get() = weatherCode.code
-
-    val weatherCodeDescription: String
-        get() = weatherCode.description
-
-    val weatherCodeIcon: String
-        get() = weatherCode.icon
-
-
-
-
-
     fun getCurrentWeatherDataAll() : List<Any> = listOf(temperature, apparentTemperature, humidity, precipitation, windSpeed, windDirection, "${weatherCodeNumber} ${weatherCodeDescription} ${weatherCodeIcon}")
+
     val weatherCodeNumber: Int
        get() = weatherCode.code
 
@@ -55,13 +43,13 @@ data class Weather(
     val longitude: Double
         get() = location.getLongitude()
 
-    val locationID: Int
+    val locationID: UInt
         get() = location.getLocationID()
 
     val weatherList : List<Any>
         get() = getCurrentWeatherDataAll()
 
-    fun getCurrentWeatherDataAll() : List<Any> = listOf(location,temperature, apparentTemperature, humidity, precipitation, windSpeed, windDirection, "${weatherCodeNumber} ${weatherCodeDescription} ${weatherCodeIcon}")
+
         //println("$temperature\n$apparentTemperature\n$humidity\n$precipitation\n$windSpeed\n$windDirection\n$weatherCode")
     fun getHourlyWeatherDataAll() = hourlyList
     fun getDailyWeatherDataAll() = dailyList

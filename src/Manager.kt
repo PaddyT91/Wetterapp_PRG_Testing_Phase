@@ -5,11 +5,11 @@ class Manager() : Logic {
 //    private val weatherCodes: WeatherCode = WeatherCode.SONNIG
     private var hourlyWeather: MutableList<WeatherList> = mutableListOf()
 
-
-    fun getCurrentWeather(location: Location): List<Any> {
-        fetchedWeather = apiHandler.fetchWeather(location)
-        return fetchedWeather!!.getCurrentWeatherDataAll()
-    }
+//
+//    fun getCurrentWeather(location: Location): List<Any> {
+//        fetchedWeather = apiHandler.fetchWeather(location)
+//        return fetchedWeather!!.getCurrentWeatherDataAll()
+//    }
 
     fun getHourlyWeather(location: Location): List<Any> {
         fetchedWeather = apiHandler.fetchWeather(location)
@@ -21,8 +21,8 @@ class Manager() : Logic {
         return fetchedWeather!!.getDailyWeatherDataAll()
     }
 
-    fun fetchLocations(searchedLocation: String) : MutableList<Location> {
-        fetchedLocations = apiHandler.fetchLocations(searchedLocation)
+    override fun getLocations(searchText: String): MutableList<Location> {
+        fetchedLocations = apiHandler.getLocations(searchText)
         return fetchedLocations
     }
 

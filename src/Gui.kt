@@ -257,7 +257,7 @@ class Gui : Application() {
                 selectedLocationWeather = manager.getCurrentWeather(newValue)
 
                 lblLocation.text = selectedLocation?.getLocationName()
-                lblWeatherCode.text = selectedLocationWeather?.getWeatherCode().toString()
+                lblWeatherCode.text = selectedLocationWeather?.getWeatherCode()?.description
                 lblTemperature.text = "${selectedLocationWeather?.getTemperature()} ℃"
                 lblTempMaxMin.text = "${selectedLocationWeather?.getDailyList()?.get(0)?.getTemperatureMax()} / ${
                     selectedLocationWeather?.getDailyList()?.get(0)?.getTemperatureMin()}"

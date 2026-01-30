@@ -16,7 +16,7 @@ data class Location(
     fun getLongitude(): Double = longitude
     fun getLatitude(): Double = latitude
     fun getName(): String = name
-    fun getID(): UInt = id
+    fun getLocationID(): UInt = id
 
     private var isFavorite = false
     fun toggleFavorite() { isFavorite = !isFavorite }
