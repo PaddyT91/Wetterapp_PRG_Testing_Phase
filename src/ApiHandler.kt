@@ -169,7 +169,7 @@ class ApiHandler() : Api {
                         val latitude = item.getDouble("latitude")
                         val longitude = item.getDouble("longitude")
                         val name = item.getString("name")
-                        val kanton = item.getString("admin1")
+                        val kanton = item.optString("admin1")
                         val bezirk = item.getString("admin2")
                         val gemeinde = item.getString("admin3")
                         val elevation = item.getDouble("elevation")
