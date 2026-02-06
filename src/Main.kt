@@ -1,4 +1,5 @@
 import javafx.application.Application
+import java.io.File
 
 /*
   Projekt:      Wetterapp
@@ -11,6 +12,9 @@ import javafx.application.Application
 
 fun main(){
     Application.launch(Gui::class.java)
+
+    val file = File("test.txt")
+    file.canExecute()
 
 //    val myApiHandler = ApiHandler()
 //    val myTest = Manager(myApiHandler)
