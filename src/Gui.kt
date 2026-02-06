@@ -12,6 +12,22 @@ import javafx.scene.effect.InnerShadow
 import javafx.scene.image.Image
 import javafx.scene.image.ImageView
 import javafx.scene.layout.*
+import javafx.scene.control.Alert
+import javafx.scene.control.Button
+import javafx.scene.control.Label
+import javafx.scene.control.ListCell
+import javafx.scene.control.ListView
+import javafx.scene.control.TextField
+import javafx.scene.layout.Border
+import javafx.scene.layout.BorderPane
+import javafx.scene.layout.BorderStroke
+import javafx.scene.layout.BorderStrokeStyle
+import javafx.scene.layout.BorderWidths
+import javafx.scene.layout.CornerRadii
+import javafx.scene.layout.FlowPane
+import javafx.scene.layout.HBox
+import javafx.scene.layout.Priority
+import javafx.scene.layout.VBox
 import javafx.scene.paint.Color
 import javafx.scene.shape.SVGPath
 import javafx.scene.shape.StrokeLineCap
@@ -26,9 +42,12 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import javax.lang.model.element.ModuleElement
+import kotlin.collections.addAll
+
 
 class Gui : Application() {
     private val manager: Logic = Manager()
+    private val favorites: GuiFavorites = GuiFavorites(manager)
     private var locationsModel = FXCollections.observableArrayList<Location>()
     private val resultsList = ListView<Location>().apply {
         prefWidth = 400.0
@@ -245,6 +264,44 @@ class Gui : Application() {
             favoriteIcon.fill = AppStyle.TRANSPARENT
         }
     }
+    private lateinit var root: BorderPane
+
+    private val btnFavoritAdd = Button("⭐ Zu Favoriten").apply {
+        alignment = Pos.TOP_RIGHT
+        padding = Insets(6.0, 18.0, 6.0, 18.0)
+
+        setOnAction {
+
+            if (selectedLocation != null && selectedLocationWeather != null) {
+                val actualFavorite = manager.addFavorites(selectedLocation!!, selectedLocationWeather!!)
+
+                if (actualFavorite) {
+                    val alert = Alert(Alert.AlertType.INFORMATION)
+                    alert.title = "Erfolg"
+                    alert.contentText = "✅ Zu Favoriten hinzugefügt!"
+                    alert.showAndWait()
+
+                    // ✅ Favoriten-Box NEU erstellen und aktualisieren
+                    root.right = favorites.createFavoriteBox(manager)
+                } else {
+                    val alert = Alert(Alert.AlertType.WARNING)
+                    alert.title = "Fehler"
+                    alert.contentText = "❌ Bereits in Favoriten!"
+                    alert.showAndWait()
+                }
+            } else {
+                    val alert = Alert(Alert.AlertType.WARNING)
+                    alert.title = "Fehler"
+                    alert.contentText = "Bitte erst einen Ort suchen!"
+                    alert.showAndWait()
+
+            }
+        }
+    }
+    private val headerBox = HBox(10.0).apply {
+        alignment = Pos.CENTER_LEFT
+        children.addAll(lblLocation)
+    }
 
     private val btnSetFavorite = Button().apply {
         graphic = favoriteIcon
@@ -359,11 +416,12 @@ class Gui : Application() {
     }
 
     override fun start(stage: Stage) {
-        val root = BorderPane().apply {
+         root = BorderPane().apply {
             top = hBoxSucheGuete
             bottom = hBoxBottom
             center = hBoxDayViewFavorites
             background = Background(BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets(0.0, 0.0, 0.0, 0.0)))
+            right = favorites.createFavoriteBox(manager)
             isFocusTraversable = true   // Nimmt den Cursor aus dem Textfeld. Textfeld will Aufmerksamkeit haben...
         }
         hBoxDayView.prefWidthProperty().bind(root.widthProperty().multiply(0.50))
