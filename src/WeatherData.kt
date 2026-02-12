@@ -29,6 +29,22 @@ class WeatherData() : Storabledata {
         println("Directory dailyData exists...")
         println(dailyDirectory.exists())
 
+        // Dateien älter als 14 Tage löschen (Datum aus Dateiname lesen)
+        // diesen Teil der Funktion wurde mittels Claude AI entwickelt
+        val formatter = java.time.format.DateTimeFormatter.ofPattern("dd.MM.yyyy")
+        val cutoffDate = java.time.LocalDate.now().minusDays(14)
+
+        dailyDirectory.listFiles()?.forEach { file ->
+            val match = Regex("""(\d{2}\.\d{2}\.\d{4})""").find(file.name)
+            if (match != null) {
+                val fileDate = java.time.LocalDate.parse(match.value, formatter)
+                if (fileDate.isBefore(cutoffDate)) {
+                    file.delete()
+                    println("Gelöscht: ${file.name}")
+                }
+            }
+        }
+
         // Write data in a .txt file
         val file = File("resources/dailyData/DailyWeatherData$date.txt")
         val formattedData = dailyForecast .toString()
@@ -36,11 +52,6 @@ class WeatherData() : Storabledata {
 
         file.writeText("--- Datum: $date | Uhrzeit: $time ---\n")  // erste Zeile mit Timestamp
         file.appendText(formattedData)
-
-        val lines = file.readLines()
-        for (line in lines) {
-            print (line)
-        }
 
         return dailyForecast
     }
@@ -64,11 +75,6 @@ class WeatherData() : Storabledata {
         file.writeText("--- Datum: $date | Uhrzeit: $time ---\n")  // erste Zeile mit Timestamp
         file.appendText(formattedData)
 
-        val lines = file.readLines()
-        for (line in lines) {
-            print (line)
-        }
-
         return hourlyData
     }
 
@@ -91,15 +97,11 @@ class WeatherData() : Storabledata {
         file.writeText("--- Datum: $date | Uhrzeit: $time ---\n")  // erste Zeile mit Timestamp
         file.appendText(formattedData)
 
-        val lines = file.readLines()
-        for (line in lines) {
-            print (line)
-            }
-
         return currentData
     }
 
     override fun storeFavorites(favorites: Favorite): Favorite {
+        val file = File("resources/favoriteLocationData/Favorites.txt")
         println("Storing favorite: ${favorites.location}")
 
         //  Create new directory
@@ -108,28 +110,44 @@ class WeatherData() : Storabledata {
         println("Directory favoriteLocationData exists...")
         println(favoritesDirectory.exists())
 
-
         return favorites
     }
 
     override fun readWeatherDataDaily() {
-        TODO("Not yet implemented")
+        val file = File("resources/dailyData/DailyWeatherData$date.txt")
+
+        val lines = file.readLines()
+        for (line in lines) {
+            print (line)
+        }
+
     }
 
     override fun readWeatherDataHourly() {
-        TODO("Not yet implemented")
+        val file = File("resources/hourlyData/HourlyWeatherData.txt")
+
+        val lines = file.readLines()
+        for (line in lines) {
+            print (line)
+        }
     }
 
     override fun readWeatherData() {
-        TODO("Not yet implemented")
+        val file = File("resources/currentData/CurrentWeatherData.txt")
+
+        val lines = file.readLines()
+        for (line in lines) {
+            print (line)
+        }
     }
 
     override fun readFavorites() {
-        TODO("Not yet implemented")
-    }
+        val file = File("resources/favoriteLocationData/Favorites.txt")
 
-    override fun clearOldData() {
-        TODO("Not yet implemented")
+        val lines = file.readLines()
+        for (line in lines) {
+            print (line)
+        }
     }
 
     override fun checkAccuracy() {

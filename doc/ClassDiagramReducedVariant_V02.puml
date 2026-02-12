@@ -32,18 +32,27 @@ class Manager {
     getDailyWeather(location: Location): List<Any>
     fetchLocations(searchedLocation: String): MutableList<Location>
     pickLocation(search: String, choice: Int): Location
+    storeWeatherDataDaily(weather: Weather): List<HourlyData>
     storeWeatherDataHourly(weather: Weather): List<Any>
+    storeWeatherData(weather: Weather): List<Any>
+    storeFavorites(favorites: Favorites): Favorite
+    readWeatherDataDaily()
     readWeatherDataHourly()
-    clearOldData()
+    readWeatherData()
+    readFavorites()
     checkAccuracy()
 }
 
 interface FileInterface {
+    storeWeatherDataDaily(weather: Weather)
     storeWeatherDataHourly(weather: Weather)
+    storeWeatherData(weather: Weather)
+    storeFavorites(favorites: Favorites)
+    readWeatherDataDaily()
     readWeatherDataHourly()
-    clearOldData()
+    readWeatherData()
+    readFavorites()
     checkAccuracy()
-
 }
 
 interface Api {
@@ -66,9 +75,14 @@ class UIClass {
 
 
 class WeatherList {
+    storeWeatherDataDaily(weather: Weather)
     storeWeatherDataHourly(weather: Weather)
+    storeWeatherData(weather: Weather)
+    storeFavorites(favorites: Favorites)
+    readWeatherDataDaily()
     readWeatherDataHourly()
-    clearOldData()
+    readWeatherData()
+    readFavorites()
     checkAccuracy()
 }
 

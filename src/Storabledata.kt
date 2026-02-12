@@ -18,6 +18,5 @@ fun readWeatherDataDaily()
 fun readWeatherDataHourly()
 fun readWeatherData()
 fun readFavorites()
-fun clearOldData()
 fun checkAccuracy()
 }
