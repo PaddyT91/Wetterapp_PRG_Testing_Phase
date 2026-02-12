@@ -1,6 +1,3 @@
-import AppStyle
-import dayView
-import plotterLineChart
 import javafx.application.Application
 import javafx.beans.property.SimpleBooleanProperty
 import javafx.collections.FXCollections
@@ -13,7 +10,6 @@ import javafx.scene.Scene
 import javafx.scene.control.Label
 import javafx.scene.control.ListCell
 import javafx.scene.control.ListView
-import javafx.scene.control.TextField
 import javafx.scene.layout.Background
 import javafx.scene.layout.BackgroundFill
 import javafx.scene.layout.Border
@@ -24,7 +20,6 @@ import javafx.scene.layout.BorderWidths
 import javafx.scene.layout.CornerRadii
 import javafx.scene.layout.FlowPane
 import javafx.scene.layout.HBox
-import javafx.scene.layout.Priority
 import javafx.scene.layout.VBox
 import javafx.scene.paint.Color
 import javafx.scene.text.Font
@@ -35,8 +30,6 @@ import javafx.stage.Modality
 import javafx.stage.Stage
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import kotlin.collections.get
-import kotlin.text.toInt
 
 //fun exit() {
 //    with(Alert(Alert.AlertType.INFORMATION)) {
@@ -220,6 +213,14 @@ class Gui : Application() {
                 selectedLocationWeather = manager.getCurrentWeather(newValue)
                 fillInLocationData(selectedLocation)
                 fillInWeatherData(selectedLocationWeather)
+                // Create and refresh the current weather file in "currentData"
+                val storage: Storabledata = WeatherData()
+                println("Current: ${storage.storeWeatherData(selectedLocationWeather)}")
+
+                // For Test purposes only safe the hourly and daily weather as well
+                println("Daily: ${storage.storeWeatherDataDaily(selectedLocationWeather)}")
+                println("Hourly: ${storage.storeWeatherDataHourly(selectedLocationWeather)}")
+
                 popupStage.close()
             }
         }
