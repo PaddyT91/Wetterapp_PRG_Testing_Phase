@@ -48,7 +48,4 @@ enum class WeatherCodes(
             }
         }
 
-    }
-
-
 }

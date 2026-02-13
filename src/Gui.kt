@@ -257,6 +257,44 @@ class Gui : Application() {
         font = Font.font("Outfit-Regular", FontWeight.SEMI_BOLD, 36.0)
 
     }
+    private lateinit var root: BorderPane
+
+    private val btnFavoritAdd = Button("⭐ Zu Favoriten").apply {
+        alignment = Pos.TOP_RIGHT
+        padding = Insets(6.0, 18.0, 6.0, 18.0)
+
+        setOnAction {
+
+            if (selectedLocation != null && selectedLocationWeather != null) {
+                val actualFavorite = manager.addFavorites(selectedLocation!!, selectedLocationWeather!!)
+
+                if (actualFavorite) {
+                    val alert = Alert(Alert.AlertType.INFORMATION)
+                    alert.title = "Erfolg"
+                    alert.contentText = "✅ Zu Favoriten hinzugefügt!"
+                    alert.showAndWait()
+
+                    // ✅ Favoriten-Box NEU erstellen und aktualisieren
+                    root.right = favorites.createFavoriteBox(manager)
+                } else {
+                    val alert = Alert(Alert.AlertType.WARNING)
+                    alert.title = "Fehler"
+                    alert.contentText = "❌ Bereits in Favoriten!"
+                    alert.showAndWait()
+                }
+            } else {
+                    val alert = Alert(Alert.AlertType.WARNING)
+                    alert.title = "Fehler"
+                    alert.contentText = "Bitte erst einen Ort suchen!"
+                    alert.showAndWait()
+
+            }
+        }
+    }
+    private val headerBox = HBox(10.0).apply {
+        alignment = Pos.CENTER_LEFT
+        children.addAll(lblLocation)
+    }
 
 /*    fun setFavoriteIcon() {
         if (isFavorite) {
@@ -387,6 +425,7 @@ class Gui : Application() {
         alignment = Pos.TOP_RIGHT
         border = Border(BorderStroke(Color.BLUE, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths(1.0)))
     }
+
 
     private val hBoxDayViewFavorites = HBox().apply {
         alignment = Pos.TOP_LEFT
