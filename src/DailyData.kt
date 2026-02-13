@@ -1,3 +1,4 @@
+import javafx.scene.image.Image
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -19,19 +20,5 @@ data class DailyData(
     fun getSunset(): String = "${sunset.hour}:${sunset.minute} Uhr"
     fun getSunrise(): String = "${sunrise.hour}:${sunrise.minute} Uhr"
 
-    val weatherCodeNumber: Int
-        get() = weatherCode.code
 
-    val weatherCodeDescription: String
-        get() = weatherCode.description
-
-    val weatherCodeIcon: String
-        get() = weatherCode.icon
-
-
-
-
-    fun get(): List<Any> {
-        return listOf(time, temperatureMin, temperatureMax, apparentTemperatureMin, apparentTemperatureMax, sunset, sunrise,  "${weatherCodeNumber}${weatherCodeDescription}${weatherCodeIcon}")
-    }
 }

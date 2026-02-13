@@ -9,25 +9,5 @@ data class HourlyData(
     private val windSpeed: Double,
     private val windDirection: Int,
     private val freezingLevel: Double,
-    private val weatherCode: WeatherCodes) {
-
-    val weatherCodeNumber: Int
-        get() = weatherCode.code
-
-    val weatherCodeDescription: String
-        get() = weatherCode.description
-
-    val weatherCodeIcon: String
-        get() = weatherCode.icon
-
-
-
-
-
-
-    fun get(): List<Any> {
-        return listOf(times, temperature2M, apparentTemperature2M, relativeHumidity2M, precipitation, windSpeed, windDirection, freezingLevel, "${weatherCodeNumber}${weatherCodeDescription}${weatherCodeIcon}")
-    }
-
-}
+    private val weatherCode: WeatherCodes)
 

@@ -1,28 +1,19 @@
+import javafx.collections.FXCollections
+import javafx.collections.ObservableList
+import javafx.scene.image.Image
+import kotlin.String
+
 class Manager() : Logic {
     private val apiHandler: Api = ApiHandler()
     private var fetchedWeather: Weather? = null
     private var fetchedLocations: MutableList<Location> = mutableListOf()
-    private var favoritesList: MutableList<Favorite> = mutableListOf()
+    private val favoritesList: ObservableList<Favorite> = FXCollections.observableArrayList()
 
-    //    private val weatherCodes: WeatherCode = WeatherCode.SONNIG
-    private var hourlyWeather: MutableList<WeatherList> = mutableListOf()
 
-//
-//    fun getCurrentWeather(location: Location): List<Any> {
+    //    fun getCurrentWeather(location: Location): List<Any> {
 //        fetchedWeather = apiHandler.fetchWeather(location)
 //        return fetchedWeather!!.getCurrentWeatherDataAll()
 //    }
-
-    fun getHourlyWeather(location: Location): List<Any> {
-        fetchedWeather = apiHandler.fetchWeather(location)
-        return fetchedWeather!!.getHourlyWeatherDataAll()
-    }
-
-    fun getDailyWeather(location: Location): List<Any> {
-        fetchedWeather = apiHandler.fetchWeather(location)
-        return fetchedWeather!!.getDailyWeatherDataAll()
-    }
-
     override fun getLocations(searchText: String): MutableList<Location> {
         fetchedLocations = apiHandler.getLocations(searchText)
         return fetchedLocations
@@ -34,36 +25,35 @@ class Manager() : Logic {
     }
 
 
-    override fun getFavoritList(): MutableList<Favorite> = favoritesList
+    override fun getFavoritesObservableList(): ObservableList<Favorite> = favoritesList
 
 
     override fun addFavorites(location: Location, weather: Weather): Boolean {
-        if (!checkForFavorites(location)) {
-            val favorite = Favorite(location, location.getName(), weather.getTemperature(), weather.weatherCodeIcon)
-            favoritesList.add(favorite)
+        if (favoritesList.size < 5 && !checkForFavorites(location)) {
+            val favorite =
+                Favorite(location, location.getName(), weather.getTemperature(), weather.getWeatherCode().icon)
             println("Ort gespeichert!")
-            return true
+            return favoritesList.add(favorite)
         }
         return false
     }
 
-    override fun removeFavorites(location: Location, weather: Weather): Boolean {
-        val favorite = Favorite(location, location.getName(), weather.getTemperature(), weather.weatherCodeIcon)
-        favoritesList.removeAll {it == favorite}
-        println("Favorit wurde aus Liste entfernt")
-        return true
+    override fun removeFavorites(location: Location): Boolean {
+        val removeFavorites = favoritesList.removeIf { it.location.getLocationID() == location.getLocationID() }
+        if (removeFavorites) {
+            println("Favorit wurde entfernt")
+        }
+        return removeFavorites
     }
 
 
     override fun checkForFavorites(location: Location): Boolean {
-        for (fav in favoritesList) {
-            if ((location.getLocationName() == fav.location.getLocationName()) and (favoritesList.size <5) ) {
-                return true
-            }
+        return favoritesList.any {
+            it.location.getLocationID() == location.getLocationID()
         }
-        return false
     }
 }
+
 
 
 //    fun storeWeatherData(weather: Weather) : MutableList<Location> {
